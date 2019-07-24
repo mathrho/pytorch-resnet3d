@@ -81,7 +81,7 @@ class Kinetics(torch.utils.data.Dataset):
             elif self.split=='val': # center crop
                 offset = len(imgs)//2 - self.clip_len
                 if offset<0:
-                    assert offset>=0, 'frames %d: less than 64!'%(len(imgs))
+                    assert offset>=0, '%s frames %d: less than 64!'%(imgs[0], len(imgs))
                 imgs = imgs[offset:(offset+2*self.clip_len):2]
                 assert len(imgs)==self.clip_len, 'frame selection error!'
 
