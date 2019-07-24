@@ -68,12 +68,19 @@ class Kinetics(torch.utils.data.Dataset):
         
         if len(imgs)>self.clip_len:
 
+            #if self.split=='train': # random sample
+            #    offset = np.random.randint(0, len(imgs)-self.clip_len)
+            #    imgs = imgs[offset:offset+self.clip_len]
+            #elif self.split=='val': # center crop
+            #    offset = len(imgs)//2 - self.clip_len//2
+            #    imgs = imgs[offset:offset+self.clip_len]
+            #    assert len(imgs)==self.clip_len, 'frame selection error!'
             if self.split=='train': # random sample
-                offset = np.random.randint(0, len(imgs)-self.clip_len)
-                imgs = imgs[offset:offset+self.clip_len]
+                offset = np.random.randint(0, len(imgs)-self.clip_len*2)
+                imgs = imgs[offset:offset+self.clip_len*2:2]
             elif self.split=='val': # center crop
-                offset = len(imgs)//2 - self.clip_len//2
-                imgs = imgs[offset:offset+self.clip_len]
+                offset = len(imgs)//2 - self.clip_len
+                imgs = imgs[offset:offset+self.clip_len*2:2]
                 assert len(imgs)==self.clip_len, 'frame selection error!'
 
         imgs = [self.loader(img) for img in imgs]
