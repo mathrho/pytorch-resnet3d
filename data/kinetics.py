@@ -127,10 +127,10 @@ class KineticsMultiCrop(Kinetics):
 
         frames = []
         for clip in clips:
-            clip = [self.clip_transform(clip).permute(1, 0, 2, 3) for _ in range(3)] 
-            clip = torch.stack(clip, 0) # (3, 3, 224, 224)
+            clip = [self.clip_transform(clip).permute(1, 0, 2, 3) for _ in range(3)] # (3, T, 224, 224)
+            clip = torch.stack(clip, 0) # (3, 3, T, 224, 224)
             frames.append(clip)
-        frames = torch.stack(frames, 0) # (10, 3, 3, 224, 224)
+        frames = torch.stack(frames, 0) # (10, 3, 3, T, 224, 224)
 
         instance = {'frames':frames, 'label':entry['label']}
 
