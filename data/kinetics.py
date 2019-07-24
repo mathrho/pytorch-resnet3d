@@ -84,6 +84,7 @@ class Kinetics(torch.utils.data.Dataset):
                     imgs = imgs[offset:(offset+2*self.clip_len):2]
                     assert len(imgs)==self.clip_len, 'frame selection error!'
                 else:
+                    print(len(imgs))
                     assert offset>=0, 'frames less than 64!'
 
         imgs = [self.loader(img) for img in imgs]
