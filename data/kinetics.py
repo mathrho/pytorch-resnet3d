@@ -85,6 +85,8 @@ class Kinetics(torch.utils.data.Dataset):
                     imgs_end = imgs[-1]
                     for _ in range(len(imgs), 2*self.clip_len):
                         imgs.append(imgs_end)
+                    offset = 0
+
                 imgs = imgs[offset:(offset+2*self.clip_len):2]
                 assert len(imgs)==self.clip_len, 'frame selection error!'
 
