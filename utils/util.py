@@ -37,7 +37,7 @@ def clip_transform(split, max_len):
     elif split=='val':
         transform = transforms.Compose([
                         gtransforms.GroupResize(256),
-                        gtransforms.GroupCenterCrop(224),
+                        gtransforms.GroupCenterCrop(256),
                         gtransforms.ToTensor(),
                         gtransforms.GroupNormalize(mean, std),
                         gtransforms.LoopPad(max_len),

@@ -85,6 +85,8 @@ class Kinetics(torch.utils.data.Dataset):
         frames = self.sample(entry['frames'])
         frames = self.clip_transform(frames) # (T, 3, 224, 224)
         frames = frames.permute(1, 0, 2, 3) # (3, T, 224, 224)
+        rgb_2_bgr = [2, 1, 0]
+        frames = frames[rgb_2_bgr, :, :, :] # (3, T, 224, 224)
         instance = {'frames':frames, 'label':entry['label']}
 
         return instance
