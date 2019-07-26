@@ -30,9 +30,11 @@ def parse_annotations(root):
             if len(frames)==0:
                 #print (yt_id, start, end, '-- Not present')
                 continue
+            # frame sparse sampling 32x2
             if len(frames) < 64:
                 cnt = cnt + 1
-            # frame sampling 32x2
+                #frames = frames
+            #else:
             frames = frames[::2]
             data.append({'frames':frames, 'label':labels.index(label)})
         print('cnt: %d' % cnt)
