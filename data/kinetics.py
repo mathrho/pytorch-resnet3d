@@ -19,6 +19,7 @@ def parse_annotations(root):
         labels = map(lambda l: l.strip('"').replace(' ', '_'), clip_labels)
         labels = np.unique(list(labels)).tolist()
 
+        cnt = 0
         data = []
         for yt_id, start, end, label in tqdm.tqdm(zip(yt_ids, start_times, end_times, clip_labels), total=len(yt_ids)):
             #label = label.strip('"')
@@ -29,7 +30,12 @@ def parse_annotations(root):
             if len(frames)==0:
                 #print (yt_id, start, end, '-- Not present')
                 continue
+            if len(frames) < 64:
+                cnt = cnt + 1
+            # frame sampling 32x2
+            frames = frames[::2]
             data.append({'frames':frames, 'label':labels.index(label)})
+        print('cnt: %d' % cnt)
         return data, labels
 
     frame_dir = '%s/frames/'%root
@@ -68,27 +74,26 @@ class Kinetics(torch.utils.data.Dataset):
         
         if len(imgs)>self.clip_len:
 
-            #if self.split=='train': # random sample
-            #    offset = np.random.randint(0, len(imgs)-self.clip_len)
-            #    imgs = imgs[offset:offset+self.clip_len]
-            #elif self.split=='val': # center crop
-            #    offset = len(imgs)//2 - self.clip_len//2
-            #    imgs = imgs[offset:offset+self.clip_len]
-            #    assert len(imgs)==self.clip_len, 'frame selection error!'
             if self.split=='train': # random sample
-                offset = np.random.randint(0, len(imgs)-self.clip_len*2)
-                imgs = imgs[offset:(offset+2*self.clip_len):2]
+                offset = np.random.randint(0, len(imgs)-self.clip_len)
+                imgs = imgs[offset:offset+self.clip_len]
             elif self.split=='val': # center crop
-                offset = len(imgs)//2 - self.clip_len
-                #assert offset>=0, '%s frames %d: less than 64!'%(imgs[0], len(imgs))
-                if offset<0:
-                    imgs_end = imgs[-1]
-                    for _ in range(len(imgs), 2*self.clip_len):
-                        imgs.append(imgs_end)
-                    offset = 0
-
-                imgs = imgs[offset:(offset+2*self.clip_len):2]
+                offset = len(imgs)//2 - self.clip_len//2
+                imgs = imgs[offset:offset+self.clip_len]
                 assert len(imgs)==self.clip_len, 'frame selection error!'
+            #if self.split=='train': # random sample
+            #    offset = np.random.randint(0, len(imgs)-self.clip_len*2)
+            #    imgs = imgs[offset:(offset+2*self.clip_len):2]
+            #elif self.split=='val': # center crop
+            #    offset = len(imgs)//2 - self.clip_len
+            #    #assert offset>=0, '%s frames %d: less than 64!'%(imgs[0], len(imgs))
+            #    if offset<0:
+            #        imgs_end = imgs[-1]
+            #        for _ in range(len(imgs), 2*self.clip_len):
+            #            imgs.append(imgs_end)
+            #        offset = 0
+            #    imgs = imgs[offset:(offset+2*self.clip_len):2]
+            #    assert len(imgs)==self.clip_len, 'frame selection error!'
 
         imgs = [self.loader(img) for img in imgs]
         return imgs
