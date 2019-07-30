@@ -46,7 +46,7 @@ from data import kinetics
 from models import resnet
 
 import os
-os.environ["CUDA_VISIBLE_DEVICES"] = '3'
+os.environ["CUDA_VISIBLE_DEVICES"] = '0'
 
 if args.mode == 'video':
     testset = kinetics.KineticsMultiCrop(root='data/kinetics/', split='val', clip_len=32)
