@@ -146,6 +146,7 @@ class KineticsMultiCrop(Kinetics):
             centers = [int(idx) for idx in np.linspace(self.clip_len, len(imgs)-self.clip_len, K)]
             for c in centers:
                 clip = imgs[c-self.clip_len:c+self.clip_len:2]
+                assert len(clip)==self.clip_len, 'frame selection error!'
                 clip = [load(img) for img in clip]
                 clips.append(clip)
         else:
