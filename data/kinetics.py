@@ -31,11 +31,11 @@ def parse_annotations(root):
                 #print (yt_id, start, end, '-- Not present')
                 continue
             # frame sparse sampling 32x2
-            if len(frames) < 64:
+            if len(frames) < 32:
                 cnt = cnt + 1
-            frames = frames[::2]
+            #frames = frames[::2]
             data.append({'frames':frames, 'label':labels.index(label)})
-        print('cnt: %d' % cnt)
+        print('cnt 32: %d' % cnt)
         return data, labels
 
     frame_dir = '%s/frames/'%root
@@ -72,26 +72,27 @@ class Kinetics(torch.utils.data.Dataset):
 
     def sample(self, imgs):
 
-        if len(imgs)>self.clip_len:
+        #if len(imgs)>self.clip_len:
+        if len(imgs)>self.clip_len*2:
 
-            if self.split=='train': # random sample
-                offset = np.random.randint(0, len(imgs)-self.clip_len)
-                imgs = imgs[offset:offset+self.clip_len]
-            elif self.split=='val': # center crop
-                offset = len(imgs)//2 - self.clip_len//2
-                imgs = imgs[offset:offset+self.clip_len]
-                assert len(imgs)==self.clip_len, 'frame selection error!'
             #if self.split=='train': # random sample
-            #    offset = np.random.randint(0, len(imgs)-self.clip_len*2)
-            #    imgs = imgs[offset:(offset+self.clip_len*2):2]
+            #    offset = np.random.randint(0, len(imgs)-self.clip_len)
+            #    imgs = imgs[offset:offset+self.clip_len]
             #elif self.split=='val': # center crop
-            #    offset = len(imgs)//2 - self.clip_len
-            #    #assert offset>=0, '%s frames %d: less than 64!'%(imgs[0], len(imgs))
-            #    imgs = imgs[offset:(offset+self.clip_len*2):2]
+            #    offset = len(imgs)//2 - self.clip_len//2
+            #    imgs = imgs[offset:offset+self.clip_len]
             #    assert len(imgs)==self.clip_len, 'frame selection error!'
-        #else:
-            #offset = 0
-            #imgs = imgs[offset::2]
+            if self.split=='train': # random sample
+                offset = np.random.randint(0, len(imgs)-self.clip_len*2)
+                imgs = imgs[offset:(offset+self.clip_len*2):2]
+            elif self.split=='val': # center crop
+                offset = len(imgs)//2 - self.clip_len
+                #assert offset>=0, '%s frames %d: less than 64!'%(imgs[0], len(imgs))
+                imgs = imgs[offset:(offset+self.clip_len*2):2]
+                assert len(imgs)==self.clip_len, 'frame selection error!'
+        else:
+            offset = 0
+            imgs = imgs[offset::2]
 
         imgs = [self.loader(img) for img in imgs]
         return imgs
@@ -130,14 +131,33 @@ class KineticsMultiCrop(Kinetics):
                 cache[img] = self.loader(img)
             return cache[img]
         
-        centers = [int(idx) for idx in np.linspace(self.clip_len//2, len(imgs)-self.clip_len//2, K)]
+        #centers = [int(idx) for idx in np.linspace(self.clip_len//2, len(imgs)-self.clip_len//2, K)]
 
-        clips = []
-        for c in centers:
-            clip = imgs[c-self.clip_len//2:c+self.clip_len//2]
-            clip = [load(img) for img in clip]
-            clips.append(clip)
+        #clips = []
+        #for c in centers:
+        #    clip = imgs[c-self.clip_len//2:c+self.clip_len//2]
+        #    clip = [load(img) for img in clip]
+        #    clips.append(clip)
+        #return clips
+
+        if len(imgs)>self.clip_len*2:
+
+            clips = []
+            centers = [int(idx) for idx in np.linspace(self.clip_len, len(imgs)-self.clip_len, K)]
+            for c in centers:
+                clip = imgs[c-self.clip_len:c+self.clip_len:2]
+                clip = [load(img) for img in clip]
+                clips.append(clip)
+        else:
+            clips = []
+            offset = 0
+            for _ in range(K):
+                clip = imgs[offset::2]
+                clip = [load(img) for img in clip]
+                clips.append(clip)
+
         return clips
+
 
     def __getitem__(self, index):
 
