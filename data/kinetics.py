@@ -29,7 +29,7 @@ def parse_annotations(root):
             frames = sorted(frames)
             frames = [f.replace(root, '') for f in frames]
             if len(frames)==0:
-                if os.path.exists('%s/%s/%s/*.jpg'%(frame_dir, label, yt_id)):
+                if os.path.exists('%s/%s/%s'%(frame_dir, label, yt_id)):
                     print (yt_id, start, end, '-- Not present Zero frame')
                 continue
             # frame sparse sampling 32x2
