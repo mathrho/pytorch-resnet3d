@@ -29,10 +29,10 @@ def parse_annotations(root):
             frames = sorted(frames)
             frames = [f.replace(root, '') for f in frames]
             if len(frames)==0:
-                #print (yt_id, start, end, '-- Not present')
+                print (yt_id, start, end, '-- Not present')
                 continue
             # frame sparse sampling 32x2
-            if len(frames) < 32:
+            if len(frames) < 32*2:
                 cnt = cnt + 1
             #frames = frames[::2]
             data.append({'frames':frames, 'label':labels.index(label)})
