@@ -49,9 +49,9 @@ import os
 os.environ["CUDA_VISIBLE_DEVICES"] = '0,1,2,3'
 
 if args.mode == 'video':
-    testset = kinetics.KineticsMultiCrop(root='data/kinetics/', split='val', clip_len=32)
+    testset = kinetics.KineticsMultiCrop(root='data/kinetics-400/', split='val', clip_len=32)
 elif args.mode == 'clip':
-    testset = kinetics.Kinetics(root='data/kinetics/', split='val', clip_len=32)
+    testset = kinetics.Kinetics(root='data/kinetics-400/', split='val', clip_len=32)
 
 testloader = torch.utils.data.DataLoader(testset, batch_size=args.batch_size, shuffle=False, num_workers=args.workers)
 

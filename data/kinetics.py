@@ -24,8 +24,8 @@ def parse_annotations(root):
         for yt_id, start, end, label in tqdm.tqdm(zip(yt_ids, start_times, end_times, clip_labels), total=len(yt_ids)):
             #label = label.strip('"')
             label = label.strip('"').replace(' ', '_')
-            frames = glob.glob('%s/%s/%s_%06d_%06d/*.jpg'%(frame_dir, label, yt_id, int(start), int(end)))
-            #frames = glob.glob('%s/%s/%s/*.jpg'%(frame_dir, label, yt_id))
+            #frames = glob.glob('%s/%s/%s_%06d_%06d/*.jpg'%(frame_dir, label, yt_id, int(start), int(end)))
+            frames = glob.glob('%s/%s/%s/*.jpg'%(frame_dir, label, yt_id))
             frames = sorted(frames)
             frames = [f.replace(root, '') for f in frames]
             if len(frames)==0:
